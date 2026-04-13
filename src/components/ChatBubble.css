@@ -1,0 +1,148 @@
+.bubble-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 0 16px;
+}
+
+.bubble-row--user {
+  flex-direction: row-reverse;
+}
+
+.bubble-avatar {
+  font-size: 20px;
+  width: 32px;
+  height: 32px;
+  background: #EDE8FF;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 18px;
+}
+
+.bubble {
+  max-width: 72%;
+  padding: 10px 14px;
+  border-radius: 18px;
+  font-size: 15px;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.bubble--bot {
+  background: #FFFFFF;
+  color: #1A1A2E;
+  border-bottom-left-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+}
+
+.bubble--user {
+  background: #7B67EE;
+  color: #FFFFFF;
+  border-bottom-right-radius: 4px;
+}
+
+/* ── Typing indicator ───────────────────────────────────────────────────────── */
+.bubble--typing {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 16px;
+  min-width: 56px;
+}
+
+.typing-dot {
+  width: 8px;
+  height: 8px;
+  background: #9CA3AF;
+  border-radius: 50%;
+  animation: bounce 1.2s infinite;
+}
+
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes bounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30%           { transform: translateY(-6px); }
+}
+
+/* Status text shown instead of dots when backend sends a status frame */
+.typing-status {
+  font-size: 13px;
+  color: #6B7280;
+  font-style: italic;
+  animation: fade-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes fade-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+/* ── Markdown body — used for all bot messages (streaming and static) ──────── */
+
+.md-body {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #1A1A2E;
+}
+
+.md-body p {
+  margin: 0 0 8px 0;
+}
+
+.md-body p:last-child {
+  margin-bottom: 0;
+}
+
+.md-body h2, .md-body h3 {
+  font-size: 13px;
+  font-weight: 700;
+  color: #7B67EE;
+  margin: 12px 0 4px;
+}
+
+.md-body h2:first-child, .md-body h3:first-child {
+  margin-top: 0;
+}
+
+.md-body ul, .md-body ol {
+  margin: 4px 0 8px 0;
+  padding-left: 18px;
+}
+
+.md-body li {
+  margin-bottom: 4px;
+}
+
+.md-body strong {
+  color: #3B2D8F;
+  font-weight: 600;
+}
+
+.md-body em {
+  font-style: italic;
+}
+
+.md-body a {
+  color: #7B67EE;
+  text-decoration: none;
+}
+
+.md-body a:hover {
+  text-decoration: underline;
+}
+
+.md-body code {
+  font-family: monospace;
+  font-size: 13px;
+  background: #F5F3FF;
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+/* Food response card rendering is handled by FoodMarkdownCard.css */

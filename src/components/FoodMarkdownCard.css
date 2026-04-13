@@ -1,0 +1,122 @@
+/* ── Food Markdown Card ────────────────────────────────────────────────────── */
+
+.fmc {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ── Favicon sources bar ──────────────────────────────────────────────────── */
+
+.fmc-sources-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #EDE8FF;
+  margin-bottom: 10px;
+}
+
+.fmc-sources-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #9B8FD4;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+/* Stacked favicons — negative margin creates the overlap */
+.fmc-fav-stack {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+}
+
+.fmc-fav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #F5F3FF;
+  border: 2px solid #fff;
+  outline: 1px solid #DDD6FE;
+  text-decoration: none;
+  flex-shrink: 0;
+  position: relative;
+  margin-left: -7px;
+  transition: transform 0.15s;
+}
+
+.fmc-fav:first-child {
+  margin-left: 0;
+}
+
+.fmc-fav:hover {
+  transform: translateY(-2px);
+}
+
+.fmc-fav img {
+  width: 13px;
+  height: 13px;
+  border-radius: 2px;
+  display: block;
+}
+
+.fmc-more {
+  font-size: 11px;
+  font-weight: 600;
+  color: #7C6EE6;
+  background: #EDE8FF;
+  border-radius: 20px;
+  padding: 3px 8px;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+  margin-left: 6px;
+  border: 2px solid #fff;
+}
+
+/* ── Tab bar ──────────────────────────────────────────────────────────────── */
+
+.fmc-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.fmc-tab {
+  flex: 1;
+  padding: 7px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1.5px solid #DDD6FE;
+  border-radius: 20px;
+  background: transparent;
+  color: #7C6EE6;
+  cursor: pointer;
+  letter-spacing: 0.01em;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+
+.fmc-tab:hover:not(.fmc-tab--on) {
+  background: #F5F3FF;
+}
+
+.fmc-tab--on {
+  background: #7B67EE;
+  color: #fff;
+  border-color: #7B67EE;
+}
+
+/* ── Tab content ──────────────────────────────────────────────────────────── */
+
+.fmc-body {
+  font-size: 14px;
+  /* min-height prevents the card from collapsing while the first section
+     is still empty and the LLM hasn't written anything into it yet */
+  min-height: 24px;
+}
+
