@@ -136,12 +136,16 @@ export async function sendMessage({ sessionId, message, petIds, userCode, langua
 //   onToken(frame)          — one LLM token; frame.content is the partial text
 //   onDone(frame)           — stream complete; frame.final_text, was_guardrailed, redirect
 //   onError(frame)          — backend-sent error frame
+//   onThinking(frame)       — deep-work signal; show "Thinking..." animation
+//   onClarification(frame)  — vague query; carries message + question chips
 //
 // Returns a controller with { abort() } so the caller can cancel mid-stream.
 export function sendMessageStream({
   sessionId, message, petIds, userCode, language = 'auto', displayName = '',
+  thinkingMode = false,
   onMeta = () => {}, onStatus = () => {}, onToolsComplete = () => {},
   onToken = () => {}, onDone = () => {}, onError = () => {},
+  onThinking = () => {}, onClarification = () => {},
 }) {
   const controller = new AbortController()
 
@@ -160,6 +164,7 @@ export function sendMessageStream({
           pet_ids: petIds,
           language,
           display_name: displayName,
+          thinking_mode: thinkingMode,
         }),
         signal: controller.signal,
       })
@@ -206,12 +211,14 @@ export function sendMessageStream({
         try {
           const frame = JSON.parse(line.slice(6))
           switch (frame.type) {
-            case 'meta':           onMeta(frame);           break
-            case 'status':         onStatus(frame);         break
-            case 'tools_complete': onToolsComplete(frame);  break
-            case 'token':          onToken(frame);          break
+            case 'meta':           onMeta(frame);                        break
+            case 'status':         onStatus(frame);                      break
+            case 'tools_complete': onToolsComplete(frame);               break
+            case 'token':          onToken(frame);                       break
             case 'done':           receivedDone = true; onDone(frame);   break
             case 'error':          receivedDone = true; onError(frame);  break
+            case 'thinking':       onThinking(frame);                    break
+            case 'clarification':  receivedDone = true; onClarification(frame); break
           }
         } catch {
           // Malformed JSON in a frame — skip it

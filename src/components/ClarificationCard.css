@@ -1,0 +1,209 @@
+/* ClarificationCard.css — bottom sheet, step-by-step question widget */
+
+/* ── Sheet container ────────────────────────────────────────────────────────── */
+
+.clarification-sheet {
+  position: relative;
+  background: #ffffff;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.10);
+  padding: 20px 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: sheet-slide-up 0.25s cubic-bezier(0.32, 0.72, 0, 1) both;
+  flex-shrink: 0;
+}
+
+@keyframes sheet-slide-up {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* ── Progress dots ──────────────────────────────────────────────────────────── */
+
+.clarification-progress {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+.clarification-dot {
+  display: inline-block;
+  border-radius: 999px;
+  transition: all 0.2s ease;
+}
+
+.dot-active {
+  width: 20px;
+  height: 8px;
+  background: #6366f1;
+}
+
+.dot-answered {
+  width: 8px;
+  height: 8px;
+  background: #6366f1;
+  opacity: 0.4;
+}
+
+.dot-future {
+  width: 8px;
+  height: 8px;
+  background: #d1d5db;
+}
+
+/* ── Question body ──────────────────────────────────────────────────────────── */
+
+.clarification-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.clarification-q-text {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.45;
+}
+
+/* ── Option chips ───────────────────────────────────────────────────────────── */
+
+.clarification-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.clarification-chip-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.clarification-chip {
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 1.5px solid #e5e7eb;
+  background: #f9fafb;
+  color: #374151;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s, transform 0.1s;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+.clarification-chip:active {
+  transform: scale(0.95);
+}
+
+.clarification-chip:hover:not(.chip-selected) {
+  border-color: #a5b4fc;
+  background: #eef2ff;
+  color: #4338ca;
+}
+
+.clarification-chip.chip-selected {
+  background: #6366f1;
+  border-color: #6366f1;
+  color: #ffffff;
+}
+
+/* ── "Other" free-text input ────────────────────────────────────────────────── */
+
+.clarification-other-input {
+  padding: 7px 12px;
+  border-radius: 10px;
+  border: 1.5px solid #a5b4fc;
+  font-size: 13px;
+  color: #111827;
+  font-family: inherit;
+  outline: none;
+  width: 200px;
+  max-width: 100%;
+  animation: fade-in 0.15s ease;
+}
+
+.clarification-other-input:focus {
+  border-color: #6366f1;
+}
+
+/* ── Open-field textarea ────────────────────────────────────────────────────── */
+
+.clarification-open-field {
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1.5px solid #e5e7eb;
+  font-size: 14px;
+  color: #111827;
+  font-family: inherit;
+  resize: none;
+  outline: none;
+  line-height: 1.5;
+}
+
+.clarification-open-field:focus {
+  border-color: #6366f1;
+}
+
+/* ── Footer ─────────────────────────────────────────────────────────────────── */
+
+.clarification-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.clarification-skip-btn {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.clarification-skip-btn:hover {
+  color: #6b7280;
+}
+
+.clarification-next-btn {
+  padding: 9px 24px;
+  border-radius: 999px;
+  border: none;
+  background: #6366f1;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.clarification-next-btn:hover:not(:disabled) {
+  background: #4f46e5;
+}
+
+.clarification-next-btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.clarification-next-btn:disabled {
+  background: #c7d2fe;
+  cursor: not-allowed;
+}
+
+/* ── Util ───────────────────────────────────────────────────────────────────── */
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

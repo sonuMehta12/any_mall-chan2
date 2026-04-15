@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import ChatBubble from '../components/ChatBubble.jsx'
 import ConfidenceBar from '../components/ConfidenceBar.jsx'
 import RecipeCard from '../components/RecipeCard.jsx'
+import ClarificationCard from '../components/ClarificationCard.jsx'
 import { sendMessageStream, fetchSetup, fetchConfidence, BASE } from '../api.js'
 import './Chat.css'
 
@@ -25,6 +26,14 @@ export default function Chat({ selectedPets, userCode, language, onBack }) {
   const [suggestedQuestions, setSuggestedQuestions] = useState([])
   const [streamingIsFood, setStreamingIsFood] = useState(false)
   const streamController = useRef(null)                   // lets us abort mid-stream
+
+  // Thinking mode — session-sticky; auto-activates for health/food deep-work
+  const [thinkingModeActive, setThinkingModeActive] = useState(false)
+  const [thinkingModeAutoActivated, setThinkingModeAutoActivated] = useState(false)
+
+  // Clarification — active question card
+  const [activeClarification, setActiveClarification] = useState(null)
+  // Shape: { questions, round, originalMessage }
 
   const messagesEndRef = useRef(null)
   const textareaRef = useRef(null)
@@ -64,6 +73,22 @@ export default function Chat({ selectedPets, userCode, language, onBack }) {
     setMessages([{ id: 1, text: greeting, isUser: false }])
   }, [])
 
+  // ClarificationCard calls onSubmit(formattedText) — text is already formatted
+  function handleClarificationSubmit(text) {
+    if (!text?.trim()) return
+    setActiveClarification(null)
+    handleSend(text)
+  }
+
+  function handleClarificationSkip() {
+    const original = activeClarification?.originalMessage
+    setActiveClarification(null)
+    // Re-send the original message so the backend can give a best-effort answer.
+    // The backend will either ask another round (if rounds < 3) or fall through
+    // to the agent after 3 total clarification attempts.
+    if (original) handleSend(original)
+  }
+
   function handleSend(overrideText) {
     const text = (overrideText || inputText).trim()
     if (!text || isTyping) return
@@ -89,6 +114,28 @@ export default function Chat({ selectedPets, userCode, language, onBack }) {
       userCode,
       language,
       displayName: 'Sarah',
+      thinkingMode: thinkingModeActive,
+
+      onThinking() {
+        if (!thinkingModeActive) {
+          setThinkingModeActive(true)
+          setThinkingModeAutoActivated(true)
+        }
+      },
+
+      onClarification(frame) {
+        // Add the bot's intro text as a normal chat bubble, then show the card.
+        setMessages(prev => [...prev, {
+          id: Date.now() + 1,
+          text: frame.message,
+          isUser: false,
+        }])
+        // Store originalMessage so Skip can re-send it for a best-effort response.
+        setActiveClarification({ questions: frame.questions, round: frame.round, originalMessage: text })
+        setIsTyping(false)
+        setStatusText(null)
+        setStreamingText('')
+      },
 
       onMeta(frame) {
         pendingMeta = frame
@@ -128,6 +175,7 @@ export default function Chat({ selectedPets, userCode, language, onBack }) {
       },
 
       onDone(frame) {
+        setThinkingModeAutoActivated(false)
         const finalText = frame.final_text
         const isFood = pendingEffectiveMode === 'food_recipes_info' || pendingEffectiveMode === 'food_info'
         const foodSections = frame.food_sections ?? null
@@ -253,7 +301,7 @@ export default function Chat({ selectedPets, userCode, language, onBack }) {
 
         {/* Show status text or typing dots while waiting for first token */}
         {isTyping && !streamingText && (
-          <ChatBubble isTyping statusText={statusText} />
+          <ChatBubble isTyping statusText={statusText} isThinking={thinkingModeActive} />
         )}
 
         {/* Live streaming bubble — grows token by token.
@@ -300,8 +348,36 @@ export default function Chat({ selectedPets, userCode, language, onBack }) {
         </div>
       )}
 
-      {/* ── Input ── */}
-      <div className="chat-input-bar">
+      {/* ── Thinking mode auto-activation banner ── */}
+      {thinkingModeAutoActivated && (
+        <div className="thinking-banner">
+          <strong>Thinking mode activated</strong>
+          <span>Switching to deep thinking for a more thorough answer.</span>
+        </div>
+      )}
+
+      {/* ── Thinking mode chip — shown when active ── */}
+      {thinkingModeActive && !activeClarification && (
+        <div className="thinking-chip">
+          Thinking mode
+          <button
+            className="thinking-chip-dismiss"
+            onClick={() => { setThinkingModeActive(false); setThinkingModeAutoActivated(false) }}
+          >×</button>
+        </div>
+      )}
+
+      {/* ── Clarification bottom sheet — replaces input bar when active ── */}
+      {activeClarification && (
+        <ClarificationCard
+          questions={activeClarification.questions}
+          onSubmit={handleClarificationSubmit}
+          onSkip={handleClarificationSkip}
+        />
+      )}
+
+      {/* ── Input — hidden while clarification card is shown ── */}
+      {!activeClarification && <div className="chat-input-bar">
         <div className="chat-input-wrap">
           <textarea
             ref={textareaRef}
@@ -319,6 +395,26 @@ export default function Chat({ selectedPets, userCode, language, onBack }) {
           />
           <button
             type="button"
+            className={`thinking-toggle-btn ${thinkingModeActive ? 'active' : ''}`}
+            onClick={() => {
+              setThinkingModeActive(v => !v)
+              setThinkingModeAutoActivated(false)
+            }}
+            title={thinkingModeActive ? 'Disable thinking mode' : 'Enable thinking mode'}
+            aria-label={thinkingModeActive ? 'Disable thinking mode' : 'Enable thinking mode'}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9.5 2a2.5 2.5 0 0 1 5 0v1.5"/>
+              <path d="M17 6.5a3.5 3.5 0 0 0-3.5-3.5H10a3.5 3.5 0 0 0-3.5 3.5v1"/>
+              <path d="M6.5 7.5A3.5 3.5 0 0 0 3 11v1a3.5 3.5 0 0 0 3.5 3.5"/>
+              <path d="M17.5 7.5A3.5 3.5 0 0 1 21 11v1a3.5 3.5 0 0 1-3.5 3.5"/>
+              <path d="M6.5 15.5A3.5 3.5 0 0 0 10 19h4a3.5 3.5 0 0 0 3.5-3.5v-1"/>
+              <line x1="12" y1="11" x2="12" y2="19"/>
+              <line x1="9" y1="14" x2="15" y2="14"/>
+            </svg>
+          </button>
+          <button
+            type="button"
             className={`chat-send-btn ${inputText.trim() ? 'active' : ''}`}
             onPointerDown={e => { e.preventDefault(); handleSend() }}
             disabled={!inputText.trim() || isTyping}
@@ -327,7 +423,8 @@ export default function Chat({ selectedPets, userCode, language, onBack }) {
           </button>
         </div>
         <p className="chat-input-hint">AnyMall-chan learns naturally — just chat normally</p>
-      </div>
+      </div>}
+
     </div>
   )
 }

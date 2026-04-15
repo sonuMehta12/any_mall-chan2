@@ -7,7 +7,7 @@ import './ChatBubble.css'
 // reference is stable and react-markdown doesn't re-create its parser each render.
 const REMARK_PLUGINS = [remarkGfm]
 
-export default function ChatBubble({ message, isUser, isFood = false, isTyping = false, statusText = null, isStreaming = false, foodSections = null }) {
+export default function ChatBubble({ message, isUser, isFood = false, isTyping = false, statusText = null, isStreaming = false, foodSections = null, isThinking = false }) {
   if (isTyping) {
     return (
       <div className="bubble-row bubble-row--bot">
@@ -15,6 +15,8 @@ export default function ChatBubble({ message, isUser, isFood = false, isTyping =
         <div className="bubble bubble--bot bubble--typing">
           {statusText
             ? <span className="typing-status">{statusText}</span>
+            : isThinking
+            ? <span className="thinking-text">Thinking...</span>
             : <>
                 <span className="typing-dot" />
                 <span className="typing-dot" />

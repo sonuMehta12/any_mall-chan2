@@ -198,6 +198,35 @@
   pointer-events: none;
 }
 
+/* ── Thinking mode toggle button (inside input bar) ── */
+.thinking-toggle-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  color: var(--text-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.thinking-toggle-btn:hover {
+  border-color: #a78bfa;
+  color: #7c3aed;
+}
+
+.thinking-toggle-btn.active {
+  background: #ede9fe;
+  border-color: #c4b5fd;
+  color: #4f46e5;
+}
+
 .chat-input-hint {
   font-size: 11px;
   color: var(--text-light);
@@ -338,4 +367,52 @@
 
 .chat-recipe-scroll::-webkit-scrollbar-thumb:hover {
   background: #bbb;
+}
+
+/* ── Thinking mode chip ──────────────────────────────────────────────────── */
+.thinking-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 12px 2px;
+  padding: 4px 12px 4px 14px;
+  background: #ede9fe;
+  border: 1.5px solid #c4b5fd;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #4f46e5;
+  align-self: flex-start;
+}
+
+.thinking-chip-dismiss {
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: #7c3aed;
+  cursor: pointer;
+  padding: 0 2px;
+  line-height: 1;
+}
+
+/* ── Thinking mode auto-activation banner ───────────────────────────────── */
+.thinking-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 4px 12px;
+  padding: 8px 14px;
+  background: #fff7ed;
+  border: 1.5px solid #fed7aa;
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+.thinking-banner strong {
+  color: #c2410c;
+}
+
+.thinking-banner span {
+  color: #9a3412;
+  font-size: 12px;
 }

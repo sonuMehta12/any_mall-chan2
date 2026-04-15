@@ -83,6 +83,20 @@
   50%       { opacity: 0.5; }
 }
 
+/* "Thinking..." text — shown when isThinking=true */
+.thinking-text {
+  font-size: 13px;
+  color: #6366f1;
+  font-style: italic;
+  font-weight: 500;
+  animation: thinking-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes thinking-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
 /* ── Markdown body — used for all bot messages (streaming and static) ──────── */
 
 .md-body {

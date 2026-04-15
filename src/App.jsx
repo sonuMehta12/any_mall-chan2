@@ -2,12 +2,17 @@ import { useState } from 'react'
 import Chat from './screens/Chat.jsx'
 import PetSelect from './screens/PetSelect.jsx'
 
-// Default user code for testing (AALDA test user)
+// The real Flutter app supplies its own authenticated user code — this is
+// test-UI only.  Use the real code directly so AALDA API lookups succeed.
 const DEFAULT_USER_CODE = '3AOU9K1PWH'
+
+function getTabUserCode() {
+  return DEFAULT_USER_CODE
+}
 
 export default function App() {
   const [screen, setScreen] = useState('petSelect') // 'petSelect' | 'chat'
-  const [userCode, setUserCode] = useState(DEFAULT_USER_CODE)
+  const [userCode, setUserCode] = useState(getTabUserCode)
   const [selectedPets, setSelectedPets] = useState([])
   const [language, setLanguage] = useState('EN') // 'EN' | 'JA'
 
