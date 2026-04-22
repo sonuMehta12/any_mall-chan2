@@ -178,8 +178,6 @@ export default function Chat({ selectedPets, userCode, language, onBack }) {
         setThinkingModeAutoActivated(false)
         const finalText = frame.final_text
         const isFood = pendingEffectiveMode === 'food_recipes_info' || pendingEffectiveMode === 'food_info'
-        const foodSections = frame.food_sections ?? null
-        console.log('[DEBUG food_sections]', foodSections)
 
         if (frame.redirect) {
           console.log('[Redirect payload]', frame.redirect)
@@ -202,7 +200,6 @@ export default function Chat({ selectedPets, userCode, language, onBack }) {
           isUser: false,
           recipes: pendingRecipes,
           isFood,
-          foodSections,
         }])
 
         // Refresh confidence after background pipeline finishes
@@ -280,7 +277,7 @@ export default function Chat({ selectedPets, userCode, language, onBack }) {
                 </div>
               </div>
             )}
-            <ChatBubble message={msg.text} isUser={msg.isUser} isFood={msg.isFood} foodSections={msg.foodSections ?? null} />
+            <ChatBubble message={msg.text} isUser={msg.isUser} isFood={msg.isFood} />
           </div>
         ))}
 

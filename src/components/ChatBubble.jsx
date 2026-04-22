@@ -7,7 +7,7 @@ import './ChatBubble.css'
 // reference is stable and react-markdown doesn't re-create its parser each render.
 const REMARK_PLUGINS = [remarkGfm]
 
-export default function ChatBubble({ message, isUser, isFood = false, isTyping = false, statusText = null, isStreaming = false, foodSections = null, isThinking = false }) {
+export default function ChatBubble({ message, isUser, isFood = false, isTyping = false, statusText = null, isStreaming = false, isThinking = false }) {
   if (isTyping) {
     return (
       <div className="bubble-row bubble-row--bot">
@@ -39,7 +39,7 @@ export default function ChatBubble({ message, isUser, isFood = false, isTyping =
              isStreaming=true  → card visible immediately, tabs auto-follow the LLM.
              isStreaming=false → tabs are interactive, user switches manually. */
           : isFood
-          ? <FoodMarkdownCard markdown={message} isStreaming={isStreaming} foodSections={foodSections} />
+          ? <FoodMarkdownCard markdown={message} isStreaming={isStreaming} />
           /* General bot messages: live Markdown (streaming and final) */
           : <div className="md-body">
               <ReactMarkdown remarkPlugins={REMARK_PLUGINS}>{message}</ReactMarkdown>
