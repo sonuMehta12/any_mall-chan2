@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import ChatBubble from '../components/ChatBubble.jsx'
 import ConfidenceBar from '../components/ConfidenceBar.jsx'
+import CategoryBreakdownSheet from '../components/CategoryBreakdownSheet.jsx'
 import RecipeCard from '../components/RecipeCard.jsx'
 import ClarificationCard from '../components/ClarificationCard.jsx'
 import { sendMessageStream, fetchSetup, fetchConfidence, BASE } from '../api.js'
@@ -22,6 +23,8 @@ export default function Chat({ selectedPets, userCode, language, onBack }) {
   const [streamingText, setStreamingText] = useState('')  // in-progress assistant reply
   const [confidenceScore, setConfidenceScore] = useState(0)
   const [confidenceColor, setConfidenceColor] = useState('red')
+  const [categoryScores, setCategoryScores] = useState([])
+  const [showBreakdown, setShowBreakdown] = useState(false)
   const [activeRedirect, setActiveRedirect] = useState(null)
   const [suggestedQuestions, setSuggestedQuestions] = useState([])
   const [streamingIsFood, setStreamingIsFood] = useState(false)
@@ -54,6 +57,7 @@ export default function Chat({ selectedPets, userCode, language, onBack }) {
       .then(data => {
         setConfidenceScore(data.confidence_score ?? 0)
         setConfidenceColor(data.confidence_color ?? 'red')
+        setCategoryScores(data.category_scores ?? [])
         if (data.suggested_questions?.length) {
           setSuggestedQuestions(data.suggested_questions)
         }
@@ -139,6 +143,7 @@ export default function Chat({ selectedPets, userCode, language, onBack }) {
 
       onMeta(frame) {
         pendingMeta = frame
+        setCategoryScores(frame.category_scores ?? [])
         console.group(
           `%c[Stream]  intent=${frame.intent_type?.toUpperCase()}  urgency=${frame.urgency}`,
           'color:#7c3aed; font-weight:bold'
@@ -208,6 +213,7 @@ export default function Chat({ selectedPets, userCode, language, onBack }) {
             .then(fresh => {
               setConfidenceScore(fresh.confidence_score ?? pendingMeta?.confidence_score ?? 0)
               setConfidenceColor(fresh.confidence_color ?? pendingMeta?.confidence_color ?? 'red')
+              setCategoryScores(fresh.category_scores ?? [])
             })
             .catch(() => {})
         }, 4000)
@@ -255,8 +261,23 @@ export default function Chat({ selectedPets, userCode, language, onBack }) {
             </div>
           </div>
         </div>
-        <ConfidenceBar score={confidenceScore} label={confidenceColor} variant="compact" />
+        <ConfidenceBar
+          score={confidenceScore}
+          label={confidenceColor}
+          variant="compact"
+          onInfoClick={categoryScores.length > 0 ? () => setShowBreakdown(true) : null}
+        />
       </div>
+
+      {/* ── Category breakdown sheet ── */}
+      {showBreakdown && (
+        <CategoryBreakdownSheet
+          categoryScores={categoryScores}
+          overallScore={confidenceScore}
+          overallColor={confidenceColor}
+          onClose={() => setShowBreakdown(false)}
+        />
+      )}
 
       {/* ── Messages ── */}
       <div className="chat-messages">

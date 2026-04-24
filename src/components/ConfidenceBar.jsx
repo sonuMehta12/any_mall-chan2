@@ -6,7 +6,7 @@ import './ConfidenceBar.css'
  * score: 0–100
  * label: 'green' | 'yellow' | 'red'
  */
-export default function ConfidenceBar({ score = 0, label = 'red', variant = 'full' }) {
+export default function ConfidenceBar({ score = 0, label = 'red', variant = 'full', onInfoClick = null }) {
   const pct = Math.min(Math.max(score, 0), 100)
 
   const colorMap = {
@@ -34,6 +34,15 @@ export default function ConfidenceBar({ score = 0, label = 'red', variant = 'ful
         <span className="confidence-compact-score" style={{ color: colors.text }}>
           {pct}%
         </span>
+        {onInfoClick && (
+          <button
+            className="confidence-info-btn"
+            onClick={onInfoClick}
+            aria-label="Show category breakdown"
+          >
+            ⓘ
+          </button>
+        )}
       </div>
     )
   }

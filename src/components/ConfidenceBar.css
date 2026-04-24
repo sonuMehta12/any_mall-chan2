@@ -24,6 +24,21 @@
   font-weight: 600;
 }
 
+.confidence-info-btn {
+  background: none;
+  border: none;
+  padding: 0 2px;
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.35);
+  transition: color 0.15s ease;
+}
+
+.confidence-info-btn:hover {
+  color: rgba(0, 0, 0, 0.65);
+}
+
 /* ── Full (pet card) ────────────────────────────────────────────────────────── */
 .confidence-full {
   border-radius: 12px;
