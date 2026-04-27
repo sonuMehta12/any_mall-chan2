@@ -13,20 +13,20 @@ export async function fetchPets(userCode) {
 }
 
 // POST /api/v1/chat
-export async function sendMessage({ sessionId, message, petIds, userCode, language = 'auto', displayName = '' }) {
+export async function sendMessage({ sessionId, message, petIds, userCode, language = 'auto', displayName = '', testPets = null }) {
+  const bodyPayload = { session_id: sessionId, message, language, display_name: displayName }
+  if (testPets) {
+    bodyPayload.test_pets = testPets
+  } else {
+    bodyPayload.pet_ids = petIds
+  }
   const res = await fetch(`${BASE}/api/v1/chat`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'X-User-Code': userCode,
     },
-    body: JSON.stringify({
-      session_id: sessionId,
-      message,
-      pet_ids: petIds,
-      language,
-      display_name: displayName,
-    }),
+    body: JSON.stringify(bodyPayload),
   })
   if (!res.ok) {
     if (res.status === 400) {
@@ -55,7 +55,7 @@ export async function sendMessage({ sessionId, message, petIds, userCode, langua
   console.groupEnd()
 
   // ── Agent 2 (Compressor) — logged after 8s (runs fire-and-forget in background) ──
-  const primaryPetId = petIds[0]
+  const primaryPetId = testPets ? 0 : petIds[0]
   setTimeout(async () => {
     try {
       const factsRes = await fetch(
@@ -143,6 +143,7 @@ export async function sendMessage({ sessionId, message, petIds, userCode, langua
 export function sendMessageStream({
   sessionId, message, petIds, userCode, language = 'auto', displayName = '',
   thinkingMode = false,
+  testPets = null,
   onMeta = () => {}, onStatus = () => {}, onToolsComplete = () => {},
   onToken = () => {}, onDone = () => {}, onError = () => {},
   onThinking = () => {}, onClarification = () => {},
@@ -152,20 +153,25 @@ export function sendMessageStream({
   ;(async () => {
     let res
     try {
+      const bodyPayload = {
+        session_id: sessionId,
+        message,
+        language,
+        display_name: displayName,
+        thinking_mode: thinkingMode,
+      }
+      if (testPets) {
+        bodyPayload.test_pets = testPets
+      } else {
+        bodyPayload.pet_ids = petIds
+      }
       res = await fetch(`${BASE}/api/v1/chat/stream`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-User-Code': userCode,
         },
-        body: JSON.stringify({
-          session_id: sessionId,
-          message,
-          pet_ids: petIds,
-          language,
-          display_name: displayName,
-          thinking_mode: thinkingMode,
-        }),
+        body: JSON.stringify(bodyPayload),
         signal: controller.signal,
       })
     } catch (err) {
@@ -241,15 +247,21 @@ export function sendMessageStream({
 // Returns confidence_score, confidence_color, and suggested_questions (3 items,
 // filtered by module). Works for 1 or more pet IDs.
 // module: 'anymall' (default) | 'food' | 'health'
-export async function fetchSetup(petIds, userCode, language = 'auto', module = 'anymall') {
-  const ids = Array.isArray(petIds) ? petIds : [petIds]
+export async function fetchSetup(petIds, userCode, language = 'auto', module = 'anymall', testPets = null) {
+  const bodyPayload = { language, module }
+  if (testPets) {
+    bodyPayload.test_pets = testPets
+  } else {
+    const ids = Array.isArray(petIds) ? petIds : [petIds]
+    bodyPayload.pet_ids = ids
+  }
   const res = await fetch(`${BASE}/api/v1/pets/setup/query`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'X-User-Code': userCode,
     },
-    body: JSON.stringify({ pet_ids: ids, language, module }),
+    body: JSON.stringify(bodyPayload),
   })
   if (!res.ok) throw new Error(`${res.status} — failed to fetch setup`)
   return res.json()

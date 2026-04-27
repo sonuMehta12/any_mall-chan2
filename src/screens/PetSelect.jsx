@@ -16,7 +16,7 @@ function calcAge(dob) {
   return `${years}yo`
 }
 
-export default function PetSelect({ userCode, onUserCodeChange, onStartChat, language, onLanguageChange }) {
+export default function PetSelect({ userCode, onUserCodeChange, onStartChat, language, onLanguageChange, onBack }) {
   const [pets, setPets] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -62,6 +62,9 @@ export default function PetSelect({ userCode, onUserCodeChange, onStartChat, lan
     <div className="petselect">
       {/* Header */}
       <div className="petselect-header">
+        {onBack && (
+          <button className="back-btn" onClick={onBack}>←</button>
+        )}
         <div>
           <h2 className="petselect-title">Your Pets</h2>
           <p className="petselect-subtitle">Select 1 or 2 pets to chat about</p>

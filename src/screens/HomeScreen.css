@@ -1,0 +1,160 @@
+/* HomeScreen.css */
+.home {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--bg);
+  padding: 0 20px 32px;
+  overflow-y: auto;
+}
+
+/* ── Hero / branding ──────────────────────────────────────────────────────── */
+.home-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 0 32px;
+}
+
+.home-logo {
+  font-size: 52px;
+  margin-bottom: 12px;
+  filter: drop-shadow(0 4px 8px rgba(123,103,238,0.25));
+}
+
+.home-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.5px;
+}
+
+.home-subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 6px;
+}
+
+/* ── Section label ────────────────────────────────────────────────────────── */
+.home-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  align-self: flex-start;
+  margin-bottom: 12px;
+}
+
+/* ── Mode cards ───────────────────────────────────────────────────────────── */
+.home-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 32px;
+}
+
+.home-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.12s, box-shadow 0.12s;
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+}
+
+.home-card:active {
+  transform: scale(0.96);
+  box-shadow: none;
+}
+
+.home-card-test {
+  background: #FFFBEB;
+  border-color: #FDE68A;
+}
+
+.home-card-test:hover {
+  background: #FEF3C7;
+  border-color: #EAB308;
+}
+
+.home-card-prod {
+  background: var(--primary-light, #EDE8FF);
+  border-color: #C4B5FD;
+}
+
+.home-card-prod:hover {
+  background: #DDD6FE;
+  border-color: var(--primary, #7B67EE);
+}
+
+.home-card-icon {
+  font-size: 36px;
+  line-height: 1;
+}
+
+.home-card-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.home-card-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ── Language ─────────────────────────────────────────────────────────────── */
+.home-lang-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.home-lang-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.home-lang-btns {
+  display: flex;
+  gap: 6px;
+}
+
+.home-lang-btn {
+  padding: 7px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1.5px solid var(--border);
+  background: white;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.home-lang-btn-active {
+  background: var(--primary, #7B67EE);
+  border-color: var(--primary, #7B67EE);
+  color: white;
+}
+
+/* ── Footer note ──────────────────────────────────────────────────────────── */
+.home-footer {
+  font-size: 11px;
+  color: var(--text-light, #9CA3AF);
+  text-align: center;
+  margin-top: auto;
+  padding-top: 16px;
+}

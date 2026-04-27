@@ -14,7 +14,7 @@ function makeSessionId() {
   return crypto.randomUUID()
 }
 
-export default function Chat({ selectedPets, userCode, language, onBack }) {
+export default function Chat({ selectedPets, userCode, language, onBack, testMode = false, activeTestPets = null, ownerName = '' }) {
   const [sessionId] = useState(makeSessionId)   // created once, never changes
   const [messages, setMessages] = useState([])
   const [inputText, setInputText] = useState('')
@@ -53,7 +53,7 @@ export default function Chat({ selectedPets, userCode, language, onBack }) {
   // Fetch setup (confidence + suggested questions) on mount
   useEffect(() => {
     if (!primaryPet) return
-    fetchSetup(petIds, userCode, language, 'anymall')
+    fetchSetup(petIds, userCode, language, 'anymall', testMode ? activeTestPets : null)
       .then(data => {
         setConfidenceScore(data.confidence_score ?? 0)
         setConfidenceColor(data.confidence_color ?? 'red')
@@ -117,8 +117,9 @@ export default function Chat({ selectedPets, userCode, language, onBack }) {
       petIds,
       userCode,
       language,
-      displayName: 'Sarah',
+      displayName: ownerName || 'Friend',
       thinkingMode: thinkingModeActive,
+      testPets: testMode ? activeTestPets : null,
 
       onThinking() {
         if (!thinkingModeActive) {
@@ -144,6 +145,8 @@ export default function Chat({ selectedPets, userCode, language, onBack }) {
       onMeta(frame) {
         pendingMeta = frame
         setCategoryScores(frame.category_scores ?? [])
+        setConfidenceScore(frame.confidence_score ?? 0)
+        setConfidenceColor(frame.confidence_color ?? 'red')
         console.group(
           `%c[Stream]  intent=${frame.intent_type?.toUpperCase()}  urgency=${frame.urgency}`,
           'color:#7c3aed; font-weight:bold'
@@ -207,16 +210,18 @@ export default function Chat({ selectedPets, userCode, language, onBack }) {
           isFood,
         }])
 
-        // Refresh confidence after background pipeline finishes
-        setTimeout(() => {
-          fetchConfidence(petIds, userCode)
-            .then(fresh => {
-              setConfidenceScore(fresh.confidence_score ?? pendingMeta?.confidence_score ?? 0)
-              setConfidenceColor(fresh.confidence_color ?? pendingMeta?.confidence_color ?? 'red')
-              setCategoryScores(fresh.category_scores ?? [])
-            })
-            .catch(() => {})
-        }, 4000)
+        // Refresh confidence after background pipeline finishes — skipped in test mode
+        if (!testMode) {
+          setTimeout(() => {
+            fetchConfidence(petIds, userCode)
+              .then(fresh => {
+                setConfidenceScore(fresh.confidence_score ?? pendingMeta?.confidence_score ?? 0)
+                setConfidenceColor(fresh.confidence_color ?? pendingMeta?.confidence_color ?? 'red')
+                setCategoryScores(fresh.category_scores ?? [])
+              })
+              .catch(() => {})
+          }, 4000)
+        }
       },
 
       onError(frame) {
