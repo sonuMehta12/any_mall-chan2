@@ -18,12 +18,17 @@ export default function App() {
   const [selectedPets, setSelectedPets] = useState([])
   const [language, setLanguage] = useState('EN') // 'EN' | 'JA'
 
+  // Incremented on every new chat so <Chat key={chatKey}> always remounts with
+  // a fresh sessionId and empty messages when the profile changes.
+  const [chatKey, setChatKey] = useState(0)
+
   // Test mode — when active, chat uses inline pet profiles instead of AALDA
   const [testMode, setTestMode] = useState(false)
   const [activeTestPets, setActiveTestPets] = useState(null)
   const [ownerName, setOwnerName] = useState('')
 
   function handleStartChat(pets) {
+    setChatKey(k => k + 1)
     setSelectedPets(pets)
     setScreen('chat')
   }
@@ -49,6 +54,7 @@ export default function App() {
       date_of_birth: tp.date_of_birth,
       life_stage: '',
     }))
+    setChatKey(k => k + 1)
     setActiveTestPets(pets)
     setOwnerName(name || '')
     setTestMode(true)
@@ -94,6 +100,7 @@ export default function App() {
       )}
       {screen === 'chat' && (
         <Chat
+          key={chatKey}
           selectedPets={selectedPets}
           userCode={userCode}
           language={language}
