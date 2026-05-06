@@ -18,6 +18,8 @@ const EXAMPLE_PROFILES = [
       body_condition: 3,
       current_diet: 'dry kibble',
       food_allergies: 'chicken',
+      size: 'large',
+      life_stage: 'adult',
     }],
     created_at: new Date().toISOString(),
   },
@@ -35,6 +37,8 @@ const EXAMPLE_PROFILES = [
       body_condition: 4,
       current_diet: 'wet food + dry mix',
       food_allergies: '',
+      size: 'medium',
+      life_stage: 'adult',
     }],
     created_at: new Date().toISOString(),
   },
@@ -53,6 +57,8 @@ const EXAMPLE_PROFILES = [
         body_condition: 3,
         current_diet: 'dry kibble + occasional wet food',
         food_allergies: 'beef',
+        size: 'medium',
+        life_stage: 'adult',
       },
       {
         name: 'Leo',
@@ -64,26 +70,30 @@ const EXAMPLE_PROFILES = [
         body_condition: 4,
         current_diet: 'premium dry cat food',
         food_allergies: '',
+        size: 'medium',
+        life_stage: 'adult',
       },
     ],
     created_at: new Date().toISOString(),
   },
 ]
 
-const JSON_SCHEMA_HINT = `// Profile (owner_name + 1 or 2 pets):
+const JSON_SCHEMA_HINT = `// Profile (owner_name + 1 or 2 pets). All fields are OPTIONAL — omit any to test sparse profiles.
 {
-  "owner_name": "Kenji",       // pet parent's name
+  "owner_name": "Kenji",                // optional — pet parent's name
   "pets": [
     {
-      "name": "Buddy",
-      "species": "dog",        // "dog" or "cat"
-      "breed": "Golden Retriever",
-      "date_of_birth": "2023-04-01",  // YYYY-MM-DD
-      "sex": "male",           // "male", "female", "unknown"
-      "activity_level": 3,     // 1 (sedentary) – 5 (very active)
-      "body_condition": 3,     // 1–5 (BCS scale)
-      "current_diet": "dry kibble",
-      "food_allergies": "chicken"  // empty string if none
+      "name": "Buddy",                  // optional — display name
+      "species": "dog",                 // optional — "dog" | "cat"
+      "breed": "Golden Retriever",      // optional
+      "date_of_birth": "2023-04-01",    // optional — YYYY-MM-DD (used to infer life_stage)
+      "sex": "male",                    // optional — "male" | "female" | "unknown"
+      "activity_level": 3,              // optional — 1 (sedentary) – 5 (very active)
+      "body_condition": 3,              // optional — 1–5 (BCS scale)
+      "current_diet": "dry kibble",     // optional
+      "food_allergies": "chicken",      // optional — empty string if none
+      "size": "large",                  // optional — "small" | "medium" | "large" (overrides breed-based inference)
+      "life_stage": "adult"             // optional — "puppy" | "adult" | "senior" | "kitten" (overrides DOB-based inference)
     }
   ]
 }`
@@ -98,6 +108,8 @@ const BLANK_PET = {
   body_condition: 3,
   current_diet: '',
   food_allergies: '',
+  size: '',
+  life_stage: '',
 }
 
 function loadProfiles() {
@@ -184,11 +196,11 @@ export default function TestProfileManager({ onBack, onStartChat, language, onLa
   }
 
   function handleSaveForm() {
-    // Validate required fields
+    // Pet Name is the only UI-required field — a blank name produces an unlabelled
+    // profile card. All other fields are optional so testers can probe sparse profiles.
     for (let i = 0; i < formPets.length; i++) {
       const p = formPets[i]
       if (!p.name.trim()) return setFormError(`Pet ${i + 1}: name is required`)
-      if (!p.date_of_birth) return setFormError(`Pet ${i + 1}: date of birth is required`)
     }
     setFormError(null)
 
@@ -204,6 +216,8 @@ export default function TestProfileManager({ onBack, onStartChat, language, onLa
         activity_level: Number(p.activity_level),
         body_condition: Number(p.body_condition),
         food_allergies: p.food_allergies.trim(),
+        size: p.size || '',
+        life_stage: p.life_stage || '',
       })),
       created_at: new Date().toISOString(),
     }
@@ -237,22 +251,32 @@ export default function TestProfileManager({ onBack, onStartChat, language, onLa
         throw new Error('Provide 1 or 2 pet objects')
       }
       petsArr.forEach((p, i) => {
-        if (!p.name) throw new Error(`Pet ${i + 1}: "name" is required`)
-        if (!['dog', 'cat'].includes(p.species)) throw new Error(`Pet ${i + 1}: "species" must be "dog" or "cat"`)
-        if (!p.date_of_birth) throw new Error(`Pet ${i + 1}: "date_of_birth" is required (YYYY-MM-DD)`)
-        if (!['male', 'female', 'unknown'].includes(p.sex)) throw new Error(`Pet ${i + 1}: "sex" must be "male", "female", or "unknown"`)
+        if (p.species != null && p.species !== '' && !['dog', 'cat'].includes(p.species)) {
+          throw new Error(`Pet ${i + 1}: "species" must be "dog" or "cat" if provided`)
+        }
+        if (p.sex != null && p.sex !== '' && !['male', 'female', 'unknown'].includes(p.sex)) {
+          throw new Error(`Pet ${i + 1}: "sex" must be "male", "female", or "unknown" if provided`)
+        }
+        if (p.size != null && p.size !== '' && !['small', 'medium', 'large'].includes(p.size)) {
+          throw new Error(`Pet ${i + 1}: "size" must be "small", "medium", or "large" if provided`)
+        }
+        if (p.life_stage != null && p.life_stage !== '' && !['puppy', 'adult', 'senior', 'kitten'].includes(p.life_stage)) {
+          throw new Error(`Pet ${i + 1}: "life_stage" must be "puppy", "adult", "senior", or "kitten" if provided`)
+        }
       })
 
       const pets = petsArr.map(p => ({
-        name: String(p.name).trim(),
-        species: p.species,
+        name: String(p.name || '').trim(),
+        species: p.species || 'dog',
         breed: String(p.breed || '').trim(),
-        date_of_birth: p.date_of_birth,
-        sex: p.sex,
-        activity_level: Math.min(5, Math.max(1, Number(p.activity_level) || 3)),
-        body_condition: Math.min(5, Math.max(1, Number(p.body_condition) || 3)),
+        date_of_birth: p.date_of_birth || '',
+        sex: p.sex || 'unknown',
+        activity_level: p.activity_level == null ? 3 : Math.min(5, Math.max(1, Number(p.activity_level) || 3)),
+        body_condition: p.body_condition == null ? 3 : Math.min(5, Math.max(1, Number(p.body_condition) || 3)),
         current_diet: String(p.current_diet || '').trim(),
         food_allergies: String(p.food_allergies || '').trim(),
+        size: p.size || '',
+        life_stage: p.life_stage || '',
       }))
 
       const entry = {
@@ -302,9 +326,13 @@ export default function TestProfileManager({ onBack, onStartChat, language, onLa
         </div>
 
         <div className="tpm-form">
+          <div className="tpm-form-note" style={{ marginBottom: 12, fontSize: 13, opacity: 0.75 }}>
+            Only <strong>Pet Name</strong> is required. Everything else is optional — leave fields blank to test sparse-profile behaviour.
+          </div>
+
           {/* Owner / pet parent name */}
           <div className="tpm-field">
-            <label className="tpm-label">Your Name (pet parent)</label>
+            <label className="tpm-label">Your Name (pet parent) <span className="tpm-optional">(optional)</span></label>
             <input
               className="tpm-input"
               value={formOwnerName}
@@ -328,14 +356,14 @@ export default function TestProfileManager({ onBack, onStartChat, language, onLa
 
               <div className="tpm-field-row">
                 <div className="tpm-field">
-                  <label className="tpm-label">Species</label>
+                  <label className="tpm-label">Species <span className="tpm-optional">(optional)</span></label>
                   <select className="tpm-select" value={pet.species} onChange={e => updatePet(idx, 'species', e.target.value)}>
                     <option value="dog">🐕 Dog</option>
                     <option value="cat">🐱 Cat</option>
                   </select>
                 </div>
                 <div className="tpm-field">
-                  <label className="tpm-label">Sex</label>
+                  <label className="tpm-label">Sex <span className="tpm-optional">(optional)</span></label>
                   <select className="tpm-select" value={pet.sex} onChange={e => updatePet(idx, 'sex', e.target.value)}>
                     <option value="male">Male</option>
                     <option value="female">Female</option>
@@ -345,17 +373,17 @@ export default function TestProfileManager({ onBack, onStartChat, language, onLa
               </div>
 
               <div className="tpm-field">
-                <label className="tpm-label">Breed</label>
+                <label className="tpm-label">Breed <span className="tpm-optional">(optional)</span></label>
                 <input className="tpm-input" value={pet.breed} onChange={e => updatePet(idx, 'breed', e.target.value)} placeholder="e.g. Golden Retriever" />
               </div>
 
               <div className="tpm-field">
-                <label className="tpm-label">Date of Birth *</label>
+                <label className="tpm-label">Date of Birth <span className="tpm-optional">(optional)</span></label>
                 <input className="tpm-input" type="date" value={pet.date_of_birth} onChange={e => updatePet(idx, 'date_of_birth', e.target.value)} />
               </div>
 
               <div className="tpm-field">
-                <label className="tpm-label">Activity Level (1 = sedentary · 5 = very active)</label>
+                <label className="tpm-label">Activity Level <span className="tpm-optional">(optional)</span> <span className="tpm-optional">— 1 sedentary · 5 very active</span></label>
                 <div className="tpm-rating-row">
                   {[1, 2, 3, 4, 5].map(n => (
                     <button
@@ -368,7 +396,7 @@ export default function TestProfileManager({ onBack, onStartChat, language, onLa
               </div>
 
               <div className="tpm-field">
-                <label className="tpm-label">Body Condition Score (1 = thin · 5 = obese)</label>
+                <label className="tpm-label">Body Condition Score <span className="tpm-optional">(optional)</span> <span className="tpm-optional">— 1 thin · 5 obese</span></label>
                 <div className="tpm-rating-row">
                   {[1, 2, 3, 4, 5].map(n => (
                     <button
@@ -380,13 +408,35 @@ export default function TestProfileManager({ onBack, onStartChat, language, onLa
                 </div>
               </div>
 
+              <div className="tpm-field-row">
+                <div className="tpm-field">
+                  <label className="tpm-label">Size <span className="tpm-optional">(optional)</span></label>
+                  <select className="tpm-select" value={pet.size} onChange={e => updatePet(idx, 'size', e.target.value)}>
+                    <option value="">— not set —</option>
+                    <option value="small">Small</option>
+                    <option value="medium">Medium</option>
+                    <option value="large">Large</option>
+                  </select>
+                </div>
+                <div className="tpm-field">
+                  <label className="tpm-label">Life Stage <span className="tpm-optional">(optional)</span></label>
+                  <select className="tpm-select" value={pet.life_stage} onChange={e => updatePet(idx, 'life_stage', e.target.value)}>
+                    <option value="">— not set —</option>
+                    <option value="puppy">Puppy</option>
+                    <option value="kitten">Kitten</option>
+                    <option value="adult">Adult</option>
+                    <option value="senior">Senior</option>
+                  </select>
+                </div>
+              </div>
+
               <div className="tpm-field">
-                <label className="tpm-label">Current Diet</label>
+                <label className="tpm-label">Current Diet <span className="tpm-optional">(optional)</span></label>
                 <input className="tpm-input" value={pet.current_diet} onChange={e => updatePet(idx, 'current_diet', e.target.value)} placeholder="e.g. dry kibble, wet food" />
               </div>
 
               <div className="tpm-field">
-                <label className="tpm-label">Food Allergies / Sensitivities</label>
+                <label className="tpm-label">Food Allergies / Sensitivities <span className="tpm-optional">(optional)</span></label>
                 <input className="tpm-input" value={pet.food_allergies} onChange={e => updatePet(idx, 'food_allergies', e.target.value)} placeholder="e.g. chicken, wheat (leave empty if none)" />
               </div>
 

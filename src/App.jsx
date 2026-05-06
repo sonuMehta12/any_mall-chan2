@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Chat from './screens/Chat.jsx'
 import HomeScreen from './screens/HomeScreen.jsx'
+import PetBioScreen from './screens/PetBioScreen.jsx'
 import PetSelect from './screens/PetSelect.jsx'
 import TestProfileManager from './screens/TestProfileManager.jsx'
 
@@ -13,10 +14,11 @@ function getTabUserCode() {
 }
 
 export default function App() {
-  const [screen, setScreen] = useState('home') // 'home' | 'petSelect' | 'testProfileManager' | 'chat'
+  const [screen, setScreen] = useState('home') // 'home' | 'petSelect' | 'testProfileManager' | 'chat' | 'petBio'
   const [userCode, setUserCode] = useState(getTabUserCode)
   const [selectedPets, setSelectedPets] = useState([])
   const [language, setLanguage] = useState('EN') // 'EN' | 'JA'
+  const [petForBio, setPetForBio] = useState(null)
 
   // Incremented on every new chat so <Chat key={chatKey}> always remounts with
   // a fresh sessionId and empty messages when the profile changes.
@@ -85,9 +87,18 @@ export default function App() {
           userCode={userCode}
           onUserCodeChange={setUserCode}
           onStartChat={handleStartChat}
+          onViewBio={pet => { setPetForBio(pet); setScreen('petBio') }}
           language={language}
           onLanguageChange={setLanguage}
           onBack={handleBackToHome}
+        />
+      )}
+      {screen === 'petBio' && petForBio && (
+        <PetBioScreen
+          pet={petForBio}
+          userCode={userCode}
+          language={language}
+          onBack={() => setScreen('petSelect')}
         />
       )}
       {screen === 'testProfileManager' && (

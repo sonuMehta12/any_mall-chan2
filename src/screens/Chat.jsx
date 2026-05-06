@@ -163,7 +163,7 @@ export default function Chat({ selectedPets, userCode, language, onBack, testMod
         setStatusText(null)  // clear status — tokens are about to start
         pendingEffectiveMode = frame.effective_mode ?? 'general'
         setStreamingIsFood(
-          pendingEffectiveMode === 'food_recipes_info' || pendingEffectiveMode === 'food_info'
+          pendingEffectiveMode === 'nutrition' || pendingEffectiveMode === 'food_info'
         )
 
         // Flatten recipes for the final message
@@ -185,7 +185,7 @@ export default function Chat({ selectedPets, userCode, language, onBack, testMod
       onDone(frame) {
         setThinkingModeAutoActivated(false)
         const finalText = frame.final_text
-        const isFood = pendingEffectiveMode === 'food_recipes_info' || pendingEffectiveMode === 'food_info'
+        const isFood = pendingEffectiveMode === 'nutrition' || pendingEffectiveMode === 'food_info'
 
         if (frame.redirect) {
           console.log('[Redirect payload]', frame.redirect)

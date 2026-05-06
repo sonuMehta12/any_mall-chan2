@@ -1,0 +1,250 @@
+.petbio {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  overflow-y: auto;
+}
+
+/* ── Header ───────────────────────────────────────────────────────────────── */
+.petbio-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 20px 20px 16px;
+  background: white;
+  border-bottom: 1px solid var(--border);
+}
+
+.petbio-header-info { flex: 1; }
+
+.petbio-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.petbio-subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.petbio-avatar {
+  font-size: 28px;
+  margin-left: auto;
+}
+
+/* ── Body ─────────────────────────────────────────────────────────────────── */
+.petbio-body {
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.petbio-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.petbio-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ── Language pills ───────────────────────────────────────────────────────── */
+.lang-pills {
+  display: flex;
+  gap: 8px;
+}
+
+.lang-pill {
+  padding: 8px 24px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: white;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.lang-pill:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.lang-pill-active {
+  background: #7B67EE;
+  border-color: #7B67EE;
+  color: white;
+}
+
+/* ── Bio textarea ─────────────────────────────────────────────────────────── */
+.petbio-textarea {
+  width: 100%;
+  padding: 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--text);
+  background: white;
+  resize: vertical;
+  outline: none;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+
+.petbio-textarea:focus { border-color: #7B67EE; }
+.petbio-textarea:disabled { opacity: 0.6; }
+
+.petbio-char-count {
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: right;
+  margin-top: -4px;
+}
+
+/* ── Action buttons ───────────────────────────────────────────────────────── */
+.petbio-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.petbio-btn {
+  flex: 1;
+  padding: 14px 16px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.petbio-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.petbio-btn-outline {
+  background: white;
+  border: 1.5px solid #7B67EE;
+  color: #7B67EE;
+}
+
+.petbio-btn-outline:active:not(:disabled) { background: #EDE8FF; }
+
+.petbio-btn-primary {
+  background: #7B67EE;
+  color: white;
+  border: none;
+}
+
+.petbio-btn-primary:active:not(:disabled) { background: #5B47CE; }
+
+/* ── Generation metadata ──────────────────────────────────────────────────── */
+.petbio-geninfo {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.badge-purple { background: #EDE8FF; color: #4C3DAB; }
+.badge-green  { background: #DCFCE7; color: #166534; }
+.badge-yellow { background: #FEF9C3; color: #713F12; }
+.badge-red    { background: #FEE2E2; color: #991B1B; }
+
+/* ── Generation result card ───────────────────────────────────────────────── */
+.gen-result-card {
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.gen-result-ai       { background: #DCFCE7; border: 1px solid #86EFAC; }
+.gen-result-template { background: #FEF9C3; border: 1px solid #FDE047; }
+
+.gen-result-header {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.gen-result-meta {
+  display: flex;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  flex-wrap: wrap;
+}
+
+.readiness-bar-track {
+  height: 4px;
+  background: rgba(0,0,0,0.08);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 2px;
+}
+
+.readiness-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.gen-result-hint {
+  font-size: 12px;
+  color: #713F12;
+  line-height: 1.5;
+  margin-top: 2px;
+}
+
+/* ── Force toggle ─────────────────────────────────────────────────────────── */
+.force-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.force-toggle input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #7B67EE;
+  cursor: pointer;
+}
+
+/* ── Force button variant ─────────────────────────────────────────────────── */
+.petbio-btn-force {
+  background: #FEF9C3;
+  border: 1.5px solid #EAB308;
+  color: #713F12;
+}
+
+.petbio-btn-force:active:not(:disabled) { background: #FDE047; }
+
+/* ── Status banner ────────────────────────────────────────────────────────── */
+.petbio-status {
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.petbio-status-success { background: #DCFCE7; color: #166534; }
+.petbio-status-error   { background: #FEE2E2; color: #991B1B; }
+.petbio-status-info    { background: #EDE8FF; color: #4C3DAB; }

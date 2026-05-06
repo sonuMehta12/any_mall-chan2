@@ -16,7 +16,7 @@ function calcAge(dob) {
   return `${years}yo`
 }
 
-export default function PetSelect({ userCode, onUserCodeChange, onStartChat, language, onLanguageChange, onBack }) {
+export default function PetSelect({ userCode, onUserCodeChange, onStartChat, onViewBio, language, onLanguageChange, onBack }) {
   const [pets, setPets] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -123,6 +123,7 @@ export default function PetSelect({ userCode, onUserCodeChange, onStartChat, lan
               pet={pet}
               isSelected={selected.has(pet.pet_id)}
               onToggle={() => togglePet(pet.pet_id)}
+              onViewBio={onViewBio}
             />
           ))
         )}
@@ -140,7 +141,7 @@ export default function PetSelect({ userCode, onUserCodeChange, onStartChat, lan
   )
 }
 
-function PetCard({ pet, isSelected, onToggle }) {
+function PetCard({ pet, isSelected, onToggle, onViewBio }) {
   const emoji = SPECIES_EMOJI[pet.species] || '🐾'
   const age = calcAge(pet.date_of_birth)
   const conf = pet.confidence || { score: 0, label: 'red' }
@@ -173,6 +174,15 @@ function PetCard({ pet, isSelected, onToggle }) {
       </div>
 
       <ConfidenceBar score={conf.score} label={conf.label} variant="full" />
+
+      {onViewBio && (
+        <button
+          className="pet-bio-btn"
+          onClick={e => { e.stopPropagation(); onViewBio(pet) }}
+        >
+          View / Edit Bio →
+        </button>
+      )}
     </div>
   )
 }

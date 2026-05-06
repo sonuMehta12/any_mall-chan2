@@ -267,6 +267,37 @@ export async function fetchSetup(petIds, userCode, language = 'auto', module = '
   return res.json()
 }
 
+// POST /api/v1/pets/{petId}/bio/generate — generate a bio for one pet.
+// Returns { bio, bio_state, bio_readiness, level, needs_more_data, saved_to_aalda, generated_at }.
+// push_to_aalda defaults true — generate also saves. Pass false for preview-only.
+export async function generateBio(petId, userCode, { language = 'EN', force = false, push_to_aalda = true } = {}) {
+  const res = await fetch(`${BASE}/api/v1/pets/${petId}/bio/generate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-User-Code': userCode },
+    body: JSON.stringify({ language, force, push_to_aalda }),
+  })
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}))
+    throw new Error(body.detail || `${res.status} — bio generation failed`)
+  }
+  return res.json()
+}
+
+// PATCH /api/v1/pets/{petId}/bio — save a bio text to AALDA (manual or confirmed).
+// Returns { pet_id, bio, saved_at }.
+export async function saveBio(petId, userCode, bioText) {
+  const res = await fetch(`${BASE}/api/v1/pets/${petId}/bio`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', 'X-User-Code': userCode },
+    body: JSON.stringify({ bio: bioText }),
+  })
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}))
+    throw new Error(body.detail || `${res.status} — failed to save bio`)
+  }
+  return res.json()
+}
+
 // GET /api/v1/confidence — backward-compatible alias (confidence only, no questions).
 // Still used by the post-chat refresh (only needs score, not questions).
 export async function fetchConfidence(petIds, userCode) {

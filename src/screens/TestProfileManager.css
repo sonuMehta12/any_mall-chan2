@@ -252,6 +252,14 @@
   letter-spacing: 0.5px;
 }
 
+.tpm-optional {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: normal;
+  opacity: 0.55;
+  margin-left: 4px;
+}
+
 .tpm-input {
   padding: 10px 12px;
   border: 1.5px solid var(--border);
